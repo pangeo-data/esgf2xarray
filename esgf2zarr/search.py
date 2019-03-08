@@ -69,8 +69,7 @@ def _get_page_dataframe(server, expected_size, offset=0,
                 item.update({f'{service_type}_url': access_url})
                 all_files.append(item)
 
-    # dropping duplicates on checksum removes all identical files
-    return pd.DataFrame(all_files).drop_duplicates(subset='checksum')
+    return pd.DataFrame(all_files)
 
 
 _get_page_dataframe_d = dask.delayed(_get_page_dataframe)
@@ -131,5 +130,6 @@ def esgf_search(server="https://esgf-node.llnl.gov/esg-search/search",
 
     if delayed:
         all_frames = dask.compute(*all_frames)
-
-    return pd.concat(all_frames)
+                         
+    # dropping duplicates on checksum removes all identical files
+    return pd.concat(all_frames).drop_duplicates(subset='checksum')
